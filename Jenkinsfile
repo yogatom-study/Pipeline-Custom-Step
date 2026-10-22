@@ -9,7 +9,7 @@ pipeline {
                 stage('Build JDK 21') {
                     agent { label 'tom-cloud' }
                     steps {
-                        sh './jenkins/build.sh'
+                        sh './scripts/build.sh'
                     }
                     post {
                         success {
@@ -21,7 +21,7 @@ pipeline {
                 stage('Build JDK 17') {
                     agent { label 'tom-cloud' }
                     steps {
-                        sh './jenkins/build.sh'
+                        sh './scripts/build.sh'
                     }
                     post {
                         success {
