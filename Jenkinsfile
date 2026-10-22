@@ -1,40 +1,35 @@
+@Library('shared-library') _
+
 pipeline {
-  agent none
-  stages {
-    stage('Maven Build') {
-      parallel {
-        stage('Build JDK 21') {
-          agent {
-            node {
-              label 'jdk21'
+    agent none
+
+    stages {
+        stage('Maven Build') {
+            parallel {
+                stage('Build JDK 21') {
+                    agent { label 'tom-cloud' }
+                    steps {
+                        sh './jenkins/build.sh'
+                    }
+                    post {
+                        success {
+                            stash(name: 'Java 21', includes: 'target/**')
+                        }
+                    }
+                }
+
+                stage('Build JDK 17') {
+                    agent { label 'tom-cloud' }
+                    steps {
+                        sh './jenkins/build.sh'
+                    }
+                    post {
+                        success {
+                            postBuildSuccess(stashName: "Java 17")
+                        }
+                    }
+                }
             }
-          }
-          steps {
-            sh './scripts/build.sh'
-          }
-          post {
-            success {
-              stash(name: 'Java 21', includes: 'target/**')
-            }
-          }
         }
-        stage('Build JDK 17') {
-          agent {
-            node {
-              label 'jdk17'
-            }
-          }
-          steps {
-            sh './scripts/build.sh'
-          }
-          post {
-            success {
-            archiveArtifacts 'target/*.jar'
-            stash(name: 'Java 17', includes: 'target/**')
-            }
-          }
-        }
-      }
     }
-  }
 }
